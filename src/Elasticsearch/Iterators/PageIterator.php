@@ -113,7 +113,7 @@ class PageIterator implements Iterator {
     {
         $this->clearScroll();
         $this->current_key = 0;
-        $this->current_scrolled_response = $this->client->search($params);
+        $this->current_scrolled_response = $this->client->search($this->params);
         $this->scroll_id = $this->current_scrolled_response['_scroll_id'];
     }
 
@@ -136,8 +136,9 @@ class PageIterator implements Iterator {
     }
 
     /**
-     * Returns a boolean to the current value is valid or not based on the number
-     * of hits received
+     * Returns a boolean value indicating if the current page is valid or not
+     * based on the number of hits in the page considering that the first page
+     * might not include any hits
      *
      * @return bool
      * @see    Iterator::valid()
