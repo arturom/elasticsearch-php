@@ -1,25 +1,25 @@
 <?php
 
-namespace Elasticsearch\Iterators;
+namespace Elasticsearch\Helper\Iterators;
 
 use Iterator;
 
 /**
- * Class HitIterator
+ * Class SearchHitIterator
  *
  * @category Elasticsearch
- * @package  Elasticsearch\Iterators
+ * @package  Elasticsearch\Helper\Iterators
  * @author   Arturo Mejia <arturo.mejia@kreatetechnology.com>
  * @license  http://www.apache.org/licenses/LICENSE-2.0 Apache2
  * @link     http://elasticsearch.org
  * @see      Iterator
  */
-class HitIterator implements Iterator {
+class SearchHitIterator implements Iterator {
 
     /**
-     * @var PageIterator
+     * @var SearchResponseIterator
      */
-    private   $page_iterator;
+    private   $search_responses;
 
     /**
      * @var int
@@ -39,15 +39,15 @@ class HitIterator implements Iterator {
     /**
      * Constructor
      *
-     * @param PageIterator $page_iterator
+     * @param SearchResponseIterator $search_responses
      */
-    public function __construct(PageIterator $page_iterator)
+    public function __construct(SearchResponseIterator $search_responses)
     {
-        $this->page_iterator = $page_iterator;
+        $this->search_responses = $search_responses;
     }
 
     /**
-     * Rewinds the internal PageIterator and itself
+     * Rewinds the internal SearchResponseIterator and itself
      *
      * @return void
      * @see    Iterator::rewind()
@@ -55,12 +55,12 @@ class HitIterator implements Iterator {
     public function rewind()
     {
         $this->current_key = 0;
-        $this->page_iterator->rewind();
+        $this->search_responses->rewind();
 
         // The first page may be empty. In that case, the next page is fetched.
-        $current_page = $this->page_iterator->current();
-        if($this->page_iterator->valid() && empty($current_page['hits']['hits'])) {
-            $this->page_iterator->next();
+        $current_page = $this->search_responses->current();
+        if($this->search_responses->valid() && empty($current_page['hits']['hits'])) {
+            $this->search_responses->next();
         }
 
         $this->readPageData();
@@ -78,11 +78,11 @@ class HitIterator implements Iterator {
     {
         $this->current_key++;
         $this->current_hit_index++;
-        $current_page = $this->page_iterator->current();
+        $current_page = $this->search_responses->current();
         if(isset($current_page['hits']['hits'][$this->current_hit_index])) {
             $this->current_hit_data = $current_page['hits']['hits'][$this->current_hit_index];
         } else {
-            $this->page_iterator->next();
+            $this->search_responses->next();
             $this->readPageData();
         }
     }
@@ -121,14 +121,14 @@ class HitIterator implements Iterator {
     }
 
     /**
-     * Advances the internal PageIterator and resets the current_hit_index to 0
+     * Advances the internal SearchResponseIterator and resets the current_hit_index to 0
      *
      * @internal
      */
     private function readPageData()
     {
-        if($this->page_iterator->valid()) {
-            $current_page = $this->page_iterator->current();
+        if($this->search_responses->valid()) {
+            $current_page = $this->search_responses->current();
             $this->current_hit_index = 0;
             $this->current_hit_data = $current_page['hits']['hits'][$this->current_hit_index];
         } else {

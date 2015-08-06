@@ -1,21 +1,21 @@
 <?php
 
-namespace Elasticsearch\Iterators;
+namespace Elasticsearch\Helper\Iterators;
 
 use ElasticSearch\Client;
 use Iterator;
 
 /**
- * Class PageIterator
+ * Class SearchResponseIterator
  *
  * @category Elasticsearch
- * @package  Elasticsearch\Iterators
+ * @package  Elasticsearch\Helper\Iterators
  * @author   Arturo Mejia <arturo.mejia@kreatetechnology.com>
  * @license  http://www.apache.org/licenses/LICENSE-2.0 Apache2
  * @link     http://elasticsearch.org
  * @see      Iterator
  */
-class PageIterator implements Iterator {
+class SearchResponseIterator implements Iterator {
 
     /**
      * @var Client
